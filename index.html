@@ -42,6 +42,7 @@ footer a:hover{color:var(--gold)}
 h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,5vw,46px);line-height:1.05;margin:0;color:var(--plum);text-wrap:balance}
 .side{display:grid;gap:14px;align-content:start;min-width:0}
 @media (min-width:901px) and (min-height:980px){.side{position:sticky;top:calc(16px + env(safe-area-inset-top,0px))}}
+@media (max-width:900px){.side{display:contents}.rail{order:0}main{order:1}.statcard{order:2}}
 .statcard{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 18px;display:grid;gap:12px}
 .statcard .glabel{margin:0}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;font-variant-numeric:tabular-nums}
@@ -192,7 +193,9 @@ footer{font-size:12px;color:var(--muted);display:flex;flex-direction:column;alig
   const PROPS = [["s","Shimmer"],["e","Sheen"],["h","High-Shading"],["c","Scented"],["g","Pigment"]];
   const cName = Object.fromEntries(COLORS), pName = Object.fromEntries(PROPS);
   const inks = DATA.inks.map(([name, brand, c, p, v, link, t, img], i) => ({ name, brand, c, p, v, link, t, img, i }));
-  const PER = 100;
+  const mobileQ = matchMedia("(max-width: 640px)");
+  let PER = mobileQ.matches ? 24 : 100;   // 24 cards per page on phones, 100 on larger screens
+  mobileQ.addEventListener("change", e => { PER = e.matches ? 24 : 100; render(); });
   const SW = {};   // swatch photos by Notion page id, filled from the swatches/b-*.json bundles
   for (const k of "0123456789abcdef"){
     fetch(`swatches/b-${k}.json`).then(r => r.ok ? r.json() : {}).then(b => {
