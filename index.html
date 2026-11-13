@@ -58,6 +58,13 @@ input[type=search]:focus-visible,select:focus-visible,button:focus-visible,a:foc
 .seg button{font:inherit;font-size:13px;font-weight:600;border:0;border-radius:9px;padding:7px 4px;background:transparent;color:var(--muted);cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgb(0 0 0/.12)}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
+.dd summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 12px;user-select:none}
+.dd summary::-webkit-details-marker{display:none}
+.dd summary span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.dd summary::after{content:"";flex:none;width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:translateY(-2px) rotate(45deg);transition:transform .15s}
+.dd[open] summary::after{transform:translateY(2px) rotate(-135deg)}
+.dd summary.on{border-color:var(--plum)}
+.dd .chips{padding:10px 2px 2px}
 .chip{font:inherit;font-size:13px;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:5px 10px;cursor:pointer}
 .chip[aria-pressed="true"]{background:var(--plum);border-color:var(--plum);color:var(--card)}
 .chip .dot{width:11px;height:11px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 1px rgb(0 0 0/.15)}
@@ -138,12 +145,12 @@ footer{font-size:12px;color:var(--muted);display:flex;flex-direction:column;alig
         <select id="brand"><option value="">All brands</option></select>
       </div>
       <div class="group more">
-        <span class="glabel">Color</span>
-        <div class="chips" id="colors"></div>
+        <span class="glabel" id="colorLabel">Color</span>
+        <details class="dd" id="colorDD"><summary aria-labelledby="colorLabel colorSum"><span id="colorSum">Any color</span></summary><div class="chips" id="colors"></div></details>
       </div>
       <div class="group more">
-        <span class="glabel">Properties</span>
-        <div class="chips" id="props"></div>
+        <span class="glabel" id="propLabel">Properties</span>
+        <details class="dd" id="propDD"><summary aria-labelledby="propLabel propSum"><span id="propSum">Any properties</span></summary><div class="chips" id="props"></div></details>
       </div>
       <label class="toggle more" for="shopOnly"><input type="checkbox" id="shopOnly"> Has a shop link</label>
       <button type="button" class="clear" id="clear" hidden>Clear all filters</button>
@@ -217,6 +224,7 @@ footer{font-size:12px;color:var(--muted);display:flex;flex-direction:column;alig
   for (const [k, l] of PROPS){ const n = inks.filter(r => r.p.includes(k)).length; if (n) $("props").append(chip(k, l, n, state.props)); }
   for (const b of brands){ const o = document.createElement("option"); o.value = b; o.textContent = `${b} (${inks.filter(r => r.brand === b).length})`; $("brand").append(o); }
 
+  document.addEventListener("click", e => { for (const d of document.querySelectorAll("details.dd[open]")) if (!d.contains(e.target)) d.open = false; });
   $("moreBtn").addEventListener("click", () => { const r = document.querySelector(".rail"), open = !r.hasAttribute("data-open"); r.toggleAttribute("data-open", open); $("moreBtn").setAttribute("aria-expanded", open); $("moreBtn").textContent = open ? "Hide filters" : "Show filters"; });
   $("q").addEventListener("input", e => { state.q = e.target.value.trim().toLowerCase(); render(); });
   $("brand").addEventListener("change", e => { state.brand = e.target.value; render(); });
@@ -299,6 +307,8 @@ footer{font-size:12px;color:var(--muted);display:flex;flex-direction:column;alig
       btns.append(mk("‹ Previous", page - 1), mk("Next ›", page + 1));
       nav.replaceChildren(pg, btns);
     }
+    const sum = (id, set, names, any) => { const el = $(id); el.textContent = set.size ? [...set].map(k => names[k]).join(", ") : any; el.parentElement.classList.toggle("on", set.size > 0); };
+    sum("colorSum", state.colors, cName, "Any color"); sum("propSum", state.props, pName, "Any properties");
     $("clear").hidden = !(state.q || state.v || state.colors.size || state.props.size || state.brand || state.shop);
   }
   render();
