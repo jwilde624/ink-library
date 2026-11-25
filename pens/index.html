@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<link rel="icon" href="../favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="description" content="Julia's fountain pen collection: browse her pens by brand, plus pens currently for sale.">
 <meta property="og:title" content="julia here. Pen Library">
 <meta property="og:description" content="Browse Julia's fountain pen collection.">
@@ -132,7 +132,7 @@ footer{font-size:12px;color:var(--muted);display:flex;flex-direction:column;alig
   <header class="hero">
     <div class="titles">
       <h1>Pen Library</h1>
-      <a class="switch" href="../">Ink Library <span aria-hidden="true">→</span></a>
+      <a class="switch" href="https://ink.juliahere.com/">Ink Library <span aria-hidden="true">→</span></a>
     </div>
   </header>
 
@@ -212,7 +212,7 @@ footer{font-size:12px;color:var(--muted);display:flex;flex-direction:column;alig
 
   const brands = [...new Set(pens.map(r => r.brand).filter(Boolean))].sort(coll.compare);
   const stat = (n, l) => { const d = document.createElement("div"); d.className = "stat"; const b = document.createElement("b"); b.textContent = n; const s = document.createElement("span"); s.textContent = l; d.append(b, s); return d; };
-  $("stats").append(stat(pens.length, "pens"), stat(brands.length, "brands"), (pens.some(r => r.s) ? stat(pens.filter(r => r.s).length, "for sale") : stat(pens.filter(r => r.g).length, "gifted")), stat(pens.reduce((a, r) => a + r.t, 0), "inkings"));
+  $("stats").append(stat(pens.length, "pens"), stat(brands.length, "brands"), (pens.some(r => r.s) ? stat(pens.filter(r => r.s).length, "for sale") : stat(pens.filter(r => r.g).length, "gifted")));
   if (DATA.updated) $("updated").textContent = "Updated " + new Date(DATA.updated + "T12:00:00").toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" });
   for (const b of brands){ const o = document.createElement("option"); o.value = b; o.textContent = `${b} (${pens.filter(r => r.brand === b).length})`; $("brand").append(o); }
 
